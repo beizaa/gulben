@@ -1,0 +1,154 @@
+manage.py = degisiklik yapma
+init.py= bu klasorun modul old soyler, karisma
+settings.py- djangodaki ayarlarin yapildigi yer, server settings, db settings, yeri gerilnce guncelleneccek
+urls.py = flaskta her bir urlmiz bir fonks ccalistiriyor. Url patternde pathleri yazinca, projemizdeki codelara gore calis fonk yazacagiz. 
+buna guncelleme yapmayacagiz, ekleyecegiz. 
+wsgi; web sunucusu ile ilg ayarlarin yapildigi, degistirmeyecegiz.
+tek yapmamaiz gereken urlsden uzanti.
+
+python manage.py runserver= serveri ayaga kaldirmak icin
+#quit the server with ctrl break
+browser= localhost:8000
+settings.py-LANGUAGE CODE'tr' yap, serveri tekrar yenilemeden o kendini tr yeniliyor
+
+Bu sayfayi goruyorsunu cunku debug=True
+settings.pyda, lokalde ccalisiyorsunuz.
+TIMEZONE: makale eklemek icin saati onemli Europe-Istanbul diye degistirilebilir. 
+
+Djangodaki hazir admin paneline gitme:
+localhost:8000/admin/ ; error aliyorum cunku admin paneli ile ilg tablolar dbye gitmemis. 
+
+django icinde pek cok sey hazir geliyor, ama calistirmak icin settings.py 
+INSTALLED_APPS: kismi var, burada hazir uygulamalar var, biz de yapinca buraya eklemeliyiz. Admin uyg icinde tablolari var olabilir.
+Ama biz daha olusturmadik. Olusturmaliyiz. 
+
+Terminalde ilk outputta migrationlariniz olusmamis diyordu, bunlari sqliteta nasil olusturacagiz.
+python manage.py ile tablolari sqlite3te calistiracagiz
++ ile yeni terminal - pyton manage.py migrate
+apply all migrations...
+simdi sqlite3e gelince tablolarin geldigini gorecegiz: mesela auth: user, id vs buradaki kullanici tablosunu kullanacah=giz ileride de
+Herhangi bir tablo olust durumunda migrate diyoruz.
+onceden  nor such table demsiti simmdi ise :
+localhost:8000/admin/ dersem gideriz cunku artik table tanimli
+su an admine giris yapabilmemiz icin juserimiz olmali.
+simdi manage.py altinda bir komut ile bunnu yapacaiz.:
+python manage.py createsuperuser diyecegim terminal2den.
+isim ve mail istiyor once. ve bir parola
+Buradan artik sitenin sahibiyiz. kullanici ekle kismi var, ekleyebiliriz, kullanici kisminda 2 kullanici olur, ama 2, kullanicisu
+anda admin paneline kendi sifresi ile giremiyor, carpi var yaninda.
+Su anda 2. userin superuser degil. O zaman 1. superuserdan onun gorev durumuu degistirebilirz. 
+Daha az ya da daha yetkili seyleri verbeiliriz asagidan, can delete can ad gibi. 
+
+Sitede kullanicilar icin gruplar olabilir yani bu gruplara gore user atayip oradan ayarlanabilir. 
+---5---
+uygulama kavrami- python ve buyuk java projelerinde de var. Projemizi kac parcaya ayirmaliyiz. 
+djangoda bir uygulama azilinca bunu baska projede de  kullanabiliriz. 
+#installed apps altindaki uygulamalar.
+
+
+kendi uygulamamizi nasil olustterminal --> python manage.py startapp article (olust uyg ismi)
+
+bunun altinda article-migrations dosy:
+uyg icinde olust modelleri veri tabanina kayit icin sql sorgularini bulunduran dosy(su an bos)
+migrations klasoru bir python modulu
+article yine bir py modul
+
+#model.py'de register ile modellerimizi kayit edecegiz,
+
+apps.py uyg ismi
+test.py testlerimizi yazd
+views.py
+---6
+article appine uygun bir model olust, models.pyde
+
+bir class halinde yapmaliyim
+#article'i modelsin icindeki Model classindan turetmeliyim.
+
+class Article(models.Model): #djangodaki hzair user tabl kullanacagimzidan bir foreign key ile atif
+            #o user silinince onun articlelarinin da silinmesi anlamina gelen on delete=models.cascade 
+    author = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    title=models.CharField(max_lenght=50)
+    content=models.TextField()
+    created_date=models.DateTimeField(auto_now_add=True)
+sonra admin.pydan articlei kayit etmeliyiz.
+
+from .models import Article (burada .models yani su an uzerinde old klasorden al)
+
+bunu admin pane gost icin:
+admin.site.register(Article)
+
+Biz bir app olsturduk ama bunu djangoya soylemedik, settings.pydaninstalled appsten Articlei ekle. 
+
+uuygulamalarimiz mevcut ve djangoya soyledik ama bunu tablosunun dbde olusturmadik. 
+Burada yeni model, makemigrations yapmaliyiz. 
+
+2.terminal2denpython manage.py makemigrations diyoruz.
+buun altindan migrations altinda bir seyler cikiyorz.
+0001 initialde id de cikiyor otomatik increment field primary key veriyor/
+
+
+python manage.py migrate #apply all migrations
+#buradaki migrations dosyasina gore tablomuzu olust.
+
+sqliteden bakinca bir eyin sut.Browse Table--> admin panelinden ekkliyoruz 
+python manage.py migrate 
+
+-admin.py'da class Meta, model=Article deyince bunlar baglaniyor
+
+su an admin pan ozellestiriyoruz
+list display oz kullanacagiz ve onunla
+article title, author bilg gost
+
+olust tarihinin tiklanabilir link yapmak icin list disp links
+
+
+title bilgisine gore arama-search field
+
+gun-ay bilg gore ne zaman hangi mak olust=list_filter
+
+--8--
+djangonun orm yapisi var:
+bununla sql sorgusu kullanmadan methodlarimizla veri tab ile iletisilebilir
+
+
+python manage.py shell
+ayni python seli gibi 
+user modelini al
+
+from django.contrib.auth.models import User
+from article.models import Article
+artik bunlarla objeler olust ve veri tabanina kayit olabilir.
+mesela User yazdik shell'e calss diyor
+user modelinin  ir class old gozukuyor
+
+su an burada farkli bir yontemle kullanici olust:
+article.models.Article
+
+In [6]: newUser = User(username =
+   ...: "denemekullanici", passwor
+   ...: d = "123")
+
+In [7]: newUser
+Out[7]: <User: denemekullanici>
+
+In [8]: newUser.save()
+
+passwordu sifrelemek icinnewUser2 = User(username =
+   ...:  "denemekullanici2")
+
+In [10]: newUser2.set_password("12
+    ...: 3")
+
+In [11]: newUser2.save()
+cunku diiger turlu sifrelenmemisti sqliteden
+
+
+
+
+
+
+
+
+
+
+
