@@ -1,3 +1,5 @@
+python 
+
 manage.py = degisiklik yapma
 init.py= bu klasorun modul old soyler, karisma
 settings.py- djangodaki ayarlarin yapildigi yer, server settings, db settings, yeri gerilnce guncelleneccek
